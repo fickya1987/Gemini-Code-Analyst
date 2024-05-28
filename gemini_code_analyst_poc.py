@@ -19,7 +19,7 @@ def read_and_append_files(repo_path, output_file):
             for file in files:
                 file_path = os.path.join(root, file)
                 try:
-                    with open(file_path, 'r') as infile:
+                    with open(file_path, 'r', encoding='utf-8') as infile:
                         content = infile.read()
                         outfile.write(f"\n\n--- {file_path} ---\n\n")
                         outfile.write(content)
@@ -136,17 +136,24 @@ if st.button("Submit"):
     # Generate response from Generative AI model
     print("Generating response...")
     st.write("Waiting for Gemini response...")
+    input_tokens = llm.count_tokens(prompt)
+    # st.write(llm.count_tokens(prompt))
     
     try:
         # processed_data = ""
         response = llm.generate_content(prompt)
-        print("Response: " + response.text)
-        st.write(response.text)        
+        output_tokens = llm.count_tokens(response.text)
+        total_tokens = input_tokens.total_tokens + output_tokens.total_tokens
+        st.write(f"Total tokens: {total_tokens}")
+        print("Total tokens: ", total_tokens)
+        print(response.text)        
+        st.write(response.text)
         
         # for chunk in response:
         #     if chunk:
-        #         processed_data = processed_data + response.text.replace("\n", " ")
+        #         # processed_data = processed_data + response.text.replace("\n", " ")
         #         st.write(chunk.text, unsafe_allow_html=False)
+        #         st.write("--------------------------------------------------------------------------------------------------")
         #         print(chunk.text)
         print("Gemini response successfully generated")
     except Exception as e:
