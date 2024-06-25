@@ -5,6 +5,7 @@ import streamlit as st
 import git
 from dotenv import load_dotenv
 import google.generativeai as genai
+from rouge import Rouge
 
 # Load environment variables
 load_dotenv()
@@ -70,8 +71,8 @@ if st.button("Submit"):
             git.Repo.clone_from(repo_url, local_path)
         except Exception as e:
             print(f"Error cloning repository: {e}")
-    else:
-        st.write("Repository already exists")
+    # else:
+    #     st.write("Repository already exists")
 
     # Process the files in the repository
     print("Processing files...")
@@ -88,34 +89,34 @@ if st.button("Submit"):
         text = ""
 
     # Output Format of LLM
-    technical_output_format = f"""
-        ***Technical Report (For Developers)***
-        **Fetch Repository Name
-        **[Enter Repository Name Here] Analysis Report
+    # technical_output_format = f"""
+        # ***Technical Report (For Developers)***
+        # **Fetch Repository Name
+        # **[Enter Repository Name Here] Analysis Report
 
-        I. Analysis Results
-        Overall Code Quality Score: [Score (e.g., A, B, C) with explanation]
-        Detailed Breakdown:
-        Syntax Errors: [Number of errors identified]
-        Code Quality Metrics: [List specific metrics used for evaluation, e.g., cyclomatic complexity, lines of code per function]
-        Best Practices Adherence: [Percentage adherence with specific areas analyzed (e.g., naming conventions, commenting style)]
-        Activity Level:
-        Commit Frequency: [Average number of commits per week/month]
-        Active Branches: [Number of currently active branches]
-        Pull Request Activity: [Number of open/closed pull requests in the last month]
-        Refactoring Opportunities:
-        Code Duplication: [Number of instances identified, potential savings in lines of code]
-        Method Complexity: [Number of methods exceeding a defined complexity threshold]
-        Algorithm Optimization: [Areas where alternative algorithms might improve performance]
-        DRY Principle Adherence:
-        Repeated Code Blocks: [Number of identified instances, potential savings in lines of code]
-        Specific Refactoring Suggestions: [Code sections with recommendations for consolidation]
+        # I. Analysis Results
+        # Overall Code Quality Score: [Score (e.g., A, B, C) with explanation]
+        # Detailed Breakdown:
+        # Syntax Errors: [Number of errors identified]
+        # Code Quality Metrics: [List specific metrics used for evaluation, e.g., cyclomatic complexity, lines of code per function]
+        # Best Practices Adherence: [Percentage adherence with specific areas analyzed (e.g., naming conventions, commenting style)]
+        # Activity Level:
+        # Commit Frequency: [Average number of commits per week/month]
+        # Active Branches: [Number of currently active branches]
+        # Pull Request Activity: [Number of open/closed pull requests in the last month]
+        # Refactoring Opportunities:
+        # Code Duplication: [Number of instances identified, potential savings in lines of code]
+        # Method Complexity: [Number of methods exceeding a defined complexity threshold]
+        # Algorithm Optimization: [Areas where alternative algorithms might improve performance]
+        # DRY Principle Adherence:
+        # Repeated Code Blocks: [Number of identified instances, potential savings in lines of code]
+        # Specific Refactoring Suggestions: [Code sections with recommendations for consolidation]
         
-        II. Recommendations
-        Prioritize refactoring opportunities based on impact and ease of implementation.
-        Utilize code review tools to identify specific code sections for improvement.
-        Explore resources on best practices for maintainable and efficient code.
-        """
+        # II. Recommendations
+        # Prioritize refactoring opportunities based on impact and ease of implementation.
+        # Utilize code review tools to identify specific code sections for improvement.
+        # Explore resources on best practices for maintainable and efficient code.
+        # """
 
     non_technical_output_format = """Non-Technical Report (For Management/Stakeholders)
         Repository Health Report
@@ -153,12 +154,13 @@ if st.button("Submit"):
         We might implement code review practices to further enhance code quality.
         We will continue to monitor the repository health and make adjustments as needed.
         """
-    output_format = """
+    technical_output_format = """
     Structured Output Format:
     ## <Repository Name> Codebase Analysis Report
 
     This report provides an in-depth analysis of the <Repo name> <techstack> application codebase, 
     focusing on key aspects such as repository activity, code quality, and adherence to best practices.
+    and provides filenames and line numbers for specific issues and recommendations for improvement.
 
     **1. Repository Metadata:**
 
@@ -212,8 +214,8 @@ if st.button("Submit"):
         Generate Reports for Everyone
 
         Use your knowledge of coding best practices to analyze the repository and generate two reports:
-        1. Technical Report in the ```{output_format}``` format
-        2. Non-Technical Report in the ```{non_technical_output_format}``` format
+        1. Technical Report in the ```{technical_output_format}``` format.
+        2. Non-Technical Report in the ```{non_technical_output_format}``` format.
 
         replace [] with the real values of the code in the output formats specified above
         Provide the developer with actionable feedback in their preferred format (technical or non-technical) to help them improve their codebase. 
@@ -240,6 +242,7 @@ if st.button("Submit"):
         print("Total tokens: ", total_tokens)
         print(response.text)        
         st.write(response.text)
+        
         
         # for chunk in response:
         #     if chunk:
