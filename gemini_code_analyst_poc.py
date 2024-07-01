@@ -1,5 +1,6 @@
 import os
-# import shutil
+import time
+import shutil
 import streamlit as st
 import git
 from dotenv import load_dotenv
@@ -15,6 +16,9 @@ genai.configure(api_key=GOOGLE_API_KEY)
 # Function to read files from a repository and append their content to an output file
 def read_and_append_files(repo_path, output_file):
     with open(output_file, 'w') as outfile:
+        repo = git.Repo(repo_path)
+        commits = len(list(repo.iter_commits()))
+        outfile.write(f"Total commits: {commits}\n\n")
         for root, dirs, files in os.walk(repo_path):
             for file in files:
                 file_path = os.path.join(root, file)
@@ -28,8 +32,20 @@ def read_and_append_files(repo_path, output_file):
 
 
 # Step 1: Load the model
-print("Loading Gemini 1.5 pro model...")
-llm = genai.GenerativeModel('gemini-1.5-flash')
+print("Loading Gemini 1.5 flash model...")
+generation_config = {
+  "temperature": 1,
+  "top_p": 0.95,
+  "top_k": 64,
+  "max_output_tokens": 8192,
+#   "max_input_tokens": 1000000,
+  "response_mime_type": "text/plain",
+}
+
+llm = genai.GenerativeModel(
+  model_name="gemini-1.5-flash",
+  generation_config=generation_config,
+)
 
 
 
@@ -68,7 +84,7 @@ if st.button("Submit"):
             text = file.read()
         st.write("Files read successfully.")
     except Exception as e:
-        st.write(f"Error reading output file: {e}")
+        st.write(f"Error reading output file: {e}\n\n")
         text = ""
 
     # Output Format of LLM
@@ -109,16 +125,18 @@ if st.button("Submit"):
     * **Code Review & Testing:** As the project evolves, prioritize regular code reviews and thorough testing to maintain code quality and identify potential issues early.
     * **Refactoring & Optimization:**  Continuously monitor for code duplication and complexity, implementing refactoring techniques as needed to enhance code maintainability and efficiency.
     * **Collaboration:**  Consider inviting more contributors or seeking feedback from the Rails community to foster diverse perspectives and enhance code quality.
+    
     """
     # Define prompt for Generative AI model
     prompt = f"""You are a Software Engineer. You have to read the following code of a github repository in triple backticks and 
-    based on the code you have to perform the following actions if the context is empty then return "Context Empty"1.
+    based on the code you have to perform the following actions if the context is empty then return "Context Empty"
     1. Metadata collection on commits, branches, and contributors to understand repository activity.
     2. Answer the following questions \n
         - "What is the code quality of this repository?"
         - "What is the activity level in this repository?"
         - "Are there any suggestions for refactoring in this repository?"
         - "Does this repository follow the DRY principle?"
+        - "List out the duplicate code which can be refactored"
     3. *Insight Generation:**
         - Using its understanding of coding best practices, the model will evaluate code quality based on factors like syntax, error frequency, and use of best practices.
         - It will assess the activity level by analyzing commit frequency, number of active branches, and recent pull requests.
@@ -127,8 +145,10 @@ if st.button("Submit"):
     4. Reporting:**
         - Generate comprehensive reports detailing the analysis, which can be used for code review sessions and development strategy planning.
     
-    You have to get the above details from the code and then you have to write the report in the below format:
-    {output_format}
+    
+    You have to get the above details from the code and then you have to generate the report for technical and non technical persons and    
+    you have to get the code which are not following the above actions it in the Technical Reports.
+    
     Replace with actual data for <>.
     Code:  ```{text}```
     """ 
@@ -137,13 +157,18 @@ if st.button("Submit"):
     print("Generating response...")
     st.write("Waiting for Gemini response...")
     input_tokens = llm.count_tokens(prompt)
-    # st.write(llm.count_tokens(prompt))
+    st.write(f"Input tokens: {input_tokens.total_tokens}")
     
     try:
-        # processed_data = ""
+        processed_data = ""
         response = llm.generate_content(prompt)
+        response.resolve()
+        # time.sleep(10)
         output_tokens = llm.count_tokens(response.text)
+        st.write(f"Output tokens: {output_tokens.total_tokens}")
+         
         total_tokens = input_tokens.total_tokens + output_tokens.total_tokens
+        
         st.write(f"Total tokens: {total_tokens}")
         print("Total tokens: ", total_tokens)
         print(response.text)        
@@ -151,11 +176,11 @@ if st.button("Submit"):
         
         # for chunk in response:
         #     if chunk:
-        #         # processed_data = processed_data + response.text.replace("\n", " ")
-        #         st.write(chunk.text, unsafe_allow_html=False)
-        #         st.write("--------------------------------------------------------------------------------------------------")
+        #         processed_data = processed_data + chunk.text
+        #         # st.write("--------------------------------------------------------------------------------------------------")
         #         print(chunk.text)
         print("Gemini response successfully generated")
+        # st.write(processed_data)
     except Exception as e:
         st.write(f"Error generating response: {e}")
         print("Error generating response: ", e)
