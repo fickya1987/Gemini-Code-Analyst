@@ -4,7 +4,6 @@ import streamlit as st
 import git
 from dotenv import load_dotenv
 import google.generativeai as genai
-from rouge import Rouge
 
 # Load environment variables
 load_dotenv()
