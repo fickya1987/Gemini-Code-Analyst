@@ -1,5 +1,5 @@
-streamlit
-git
-os
 python-dotenv
 google.generativeai
+git
+os
+streamlit
