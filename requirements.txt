@@ -1,5 +1,5 @@
 python-dotenv
 google.generativeai
-git
+git=2018.2.1
 os
 streamlit
