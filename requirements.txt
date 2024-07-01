@@ -1,5 +1,5 @@
 python-dotenv
 google.generativeai
-git=24.1.1
+git>=4.4
 os
 streamlit
