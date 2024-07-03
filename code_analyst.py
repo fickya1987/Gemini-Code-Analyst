@@ -4,7 +4,6 @@ import git
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-
 # Load environment variables
 load_dotenv()
 
@@ -87,35 +86,6 @@ if st.button("Submit"):
         text = ""
 
     # Output Format of LLM
-    # technical_output_format = f"""
-    #     ***Technical Report (For Developers)***
-    #     **Fetch Repository Name
-    #     **[Enter Repository Name Here] Analysis Report
-
-    #     I. Analysis Results
-    #     Overall Code Quality Score: [Score (e.g., A, B, C) with explanation]
-    #     Detailed Breakdown:
-    #     Syntax Errors: [Number of errors identified]
-    #     Code Quality Metrics: [List specific metrics used for evaluation, e.g., cyclomatic complexity, lines of code per function]
-    #     Best Practices Adherence: [Percentage adherence with specific areas analyzed (e.g., naming conventions, commenting style)]
-    #     Activity Level:
-    #     Commit Frequency: [Average number of commits per week/month]
-    #     Active Branches: [Number of currently active branches]
-    #     Pull Request Activity: [Number of open/closed pull requests in the last month]
-    #     Refactoring Opportunities:
-    #     Code Duplication: [Number of instances identified, potential savings in lines of code]
-    #     Method Complexity: [Number of methods exceeding a defined complexity threshold]
-    #     Algorithm Optimization: [Areas where alternative algorithms might improve performance]
-    #     DRY Principle Adherence:
-    #     Repeated Code Blocks: [Number of identified instances, potential savings in lines of code]
-    #     Specific Refactoring Suggestions: [Code sections with recommendations for consolidation]
-        
-    #     II. Recommendations
-    #     Prioritize refactoring opportunities based on impact and ease of implementation.
-    #     Utilize code review tools to identify specific code sections for improvement.
-    #     Explore resources on best practices for maintainable and efficient code.
-    #     """
-
     non_technical_output_format = """Non-Technical Report (For Management/Stakeholders)
         Repository Health Report
 
@@ -212,6 +182,8 @@ if st.button("Submit"):
         Generate Reports for Everyone
 
         Use your knowledge of coding best practices to analyze the repository and generate two reports:
+
+
         1. Technical Report in the ```{technical_output_format}``` format.
         2. Non-Technical Report in the ```{non_technical_output_format}``` format.
 
