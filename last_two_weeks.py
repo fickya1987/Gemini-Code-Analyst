@@ -18,13 +18,14 @@ if not username or not token:
     exit(1)
 
 # Construct the repository URL with the access token
-# repo_url = f"https://{username}:{token}@github.com/{username}/{repository_name}.git"
-repo_url = st.text_input("Enter Repository URL:")
-target_directory = "./" + repo_url.split('/')[-1].replace('.git', '')
+repo_url = st.text_input("Enter repository name: ")
 
 
 if st.button("Submit"):
     # Clone the repository if not already cloned
+    # repo_url = f"https://{username}:{token}@github.com/{username}/{repository_name}.git"
+    # repo_url = st.text_input("Enter Repository URL:")
+    target_directory = "./" + repo_url.split('/')[-1].replace('.git', '')
     if not os.path.exists(target_directory):
         try:
             git.Repo.clone_from(repo_url, target_directory)
