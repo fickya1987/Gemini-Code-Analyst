@@ -7,7 +7,6 @@ from helper import  generate_and_send, output_format, send_email, generate_repor
 import google.generativeai as genai
 from dotenv import load_dotenv
 import schedule
-from cronjob import job
 
 load_dotenv()
 
